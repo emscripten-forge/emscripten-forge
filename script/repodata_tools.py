@@ -5,8 +5,7 @@ import os
 import requests
 import hashlib
 
-# DRY_RUN = os.environ.get("DRY_RUN", False)
-DRY_RUN = True
+DRY_RUN = os.environ.get("DRY_RUN", False)
 
 DRY_RUN_MAX_FILES = 5
 uploaded_files = 0
