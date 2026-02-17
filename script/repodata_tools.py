@@ -8,10 +8,11 @@ import hashlib
 
 DRY_RUN = os.environ.get("DRY_RUN", False)
 
+RUN_MAX_FILES = 300
 DRY_RUN_MAX_FILES = 5
 uploaded_files = 0
 
-CHANNEL = "emscripten-forge-test"
+CHANNEL = "emscripten-forge"
 
 platforms = ["noarch", "emscripten-wasm32"]
 
@@ -38,6 +39,8 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
     for package, pkg_info in packages.items():
         if package not in current_packages:
             if DRY_RUN and uploaded_files >= DRY_RUN_MAX_FILES:
+                continue
+            if not DRY_RUN and uploaded_files >= RUN_MAX_FILES:
                 continue
 
             url = f"{orig_channel}/{platform}/{package}"
@@ -79,8 +82,8 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
 
             if not DRY_RUN:
                 subprocess.run(upload_cmd, check=True)
-            else:
-                uploaded_files = uploaded_files + 1
+
+            uploaded_files = uploaded_files + 1
 
             # Optional: remove temp file
             os.remove(local_filename)
