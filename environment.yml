@@ -1,0 +1,6 @@
+name: ci
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - rattler-build
