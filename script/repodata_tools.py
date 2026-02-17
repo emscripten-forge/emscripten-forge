@@ -11,7 +11,7 @@ DRY_RUN = True
 DRY_RUN_MAX_FILES = 5
 uploaded_files = 0
 
-CHANNEL = "emscripten-forge"
+CHANNEL = "emscripten-forge-test"
 
 platforms = ["noarch", "emscripten-wasm32"]
 
