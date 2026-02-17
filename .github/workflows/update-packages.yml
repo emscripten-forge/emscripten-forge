@@ -35,5 +35,5 @@ jobs:
         with:
           environment-file: environment.yml
 
-      - name: Build and upload
+      - name: Update mirror
         run: python -m script
