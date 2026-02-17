@@ -15,16 +15,13 @@ defaults:
   run:
     shell: bash -l {0}
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    environment:
-      name: dev
-
-    permissions:
-      id-token: write
-      contents: write
 
     steps:
       - name: Checkout
