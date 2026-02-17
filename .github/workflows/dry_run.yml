@@ -9,7 +9,7 @@ defaults:
     shell: bash -l {0}
 
 jobs:
-  build:
+  update_packages:
     name: Upload dry run
     runs-on: ubuntu-latest
 
