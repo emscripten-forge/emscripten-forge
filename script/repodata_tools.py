@@ -55,7 +55,7 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
 
-            if 'emscripten-abi' not in package:
+            if platform != 'noarch' and 'emscripten-abi' not in package:
                 correct = False
                 for dep in pkg_info['depends']:
                     if 'emscripten-abi' in dep:
