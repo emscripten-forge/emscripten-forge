@@ -55,6 +55,15 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
 
+            if 'emscripten-abi' not in package:
+                correct = False
+                for dep in pkg_info['depends']:
+                    if 'emscripten-abi' in dep:
+                        correct = True
+                if not correct:
+                    print(f'package {package} from {orig_channel} does not depend on emscripten-abi! Skipping')
+                    continue
+
             # Check sha256
             expected_sha256 = pkg_info.get("sha256")
             if expected_sha256:
