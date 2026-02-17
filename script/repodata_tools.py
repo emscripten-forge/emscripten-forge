@@ -2,6 +2,7 @@ import bz2
 import io
 import json
 import os
+import subprocess
 import requests
 import hashlib
 
