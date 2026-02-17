@@ -42,7 +42,7 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
 
             url = f"{orig_channel}/{platform}/{package}"
 
-            print(f"\nDo upload {package} on {platform} from {url}")
+            print(f"\nDo upload {package} on {platform} from {url}", flush=True)
 
             # Download
             local_filename = os.path.join("/tmp", package)
@@ -62,7 +62,7 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
                 calculated_sha256 = sha256_hash.hexdigest()
 
                 if calculated_sha256 != expected_sha256:
-                    print(f"SHA256 mismatch for {package}: expected {expected_sha256}, got {calculated_sha256}")
+                    print(f"SHA256 mismatch for {package}: expected {expected_sha256}, got {calculated_sha256}", flush=True)
                     continue  # Skip upload
 
             # Upload
@@ -75,7 +75,7 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
                 "--skip-existing",
                 local_filename
             ]
-            print("Running:", " ".join(upload_cmd))
+            print("Running:", " ".join(upload_cmd), flush=True)
 
             if not DRY_RUN:
                 subprocess.run(upload_cmd, check=True)
