@@ -14,6 +14,77 @@ uploaded_files = 0
 
 CHANNEL = "emscripten-forge"
 
+# Known noarch packages that do not need to depend on emscripten-abi
+WHITELIST = [
+    "astropy-7.2.0-py313h48f9ed5_1.tar.bz2",
+    "astropy-7.2.0-py313h4c1943c_2.tar.bz2",
+    "clang-resource-headers-20.1.8-hc286ada_1.tar.bz2",
+    "clang-resource-headers-21.1.8-hc286ada_0.tar.bz2",
+    "fps-kernel-web-worker-0.1.10-py313h1e85631_0.tar.bz2",
+    "fps-kernel-web-worker-0.1.10-py313h1e85631_1.tar.bz2",
+    "fps-kernel-web-worker-0.1.7-py313h1e85631_0.tar.bz2",
+    "fps-kernel-web-worker-0.1.8-py313h1e85631_0.tar.bz2",
+    "fps-kernel-web-worker-0.1.9-py313h1e85631_0.tar.bz2",
+    "matplotlib-3.10.7-py313hf9b0b07_0.tar.bz2",
+    "matplotlib-3.10.8-py313h4b20186_0.tar.bz2",
+    "matplotlib-3.10.8-py313hba19ed7_2.tar.bz2",
+    "matplotlib-3.10.8-py313hc79e5cd_1.tar.bz2",
+    "matplotlib-3.10.8-py313hdac90d7_3.tar.bz2",
+]
+
+# Known non-noarch packages that miss the emscripten-abi dependency.
+# We can't have those on the merged channel
+BLACKLIST = [
+    # 3.x packages
+    "pyjs-3.1.0-hc286ada_3.tar.bz2",
+    "pyjs-3.2.0-hc286ada_0.tar.bz2",
+    "python_abi-3.13.1-0_cp313.tar.bz2",
+    "python_abi-3.13.1-1_cp313.tar.bz2",
+    "protobuf-4.22.3-h7223423_0.conda",
+
+    # 4.x packages
+    "google-crc32c-1.8.0-py313h1804a44_1.tar.bz2",
+    "jiter-0.13.0-py313h1804a44_1.tar.bz2",
+    "joblib-1.5.2-py313h1804a44_2.tar.bz2",
+    "lakers-python-0.6.0-py313hf898885_0.tar.bz2",
+    "lakers-python-0.6.0-py313hf898885_1.tar.bz2",
+    "nlopt-2.10.0-np23py313hb3c72f9_0.tar.bz2",
+    "nlopt-2.10.1-np23py313hb3c72f9_0.tar.bz2",
+    "nlopt-2.10.1-np23py313hb3c72f9_1.tar.bz2",
+    "orjson-3.11.4-py313h3ab680a_0.tar.bz2",
+    "orjson-3.11.5-py313h3ab680a_0.tar.bz2",
+    "orjson-3.11.6-py313h3ab680a_0.tar.bz2",
+    "orjson-3.11.7-py313h3ab680a_0.tar.bz2",
+    "orjson-3.11.7-py313h3ab680a_1.tar.bz2",
+    "patsy-1.0.1-py313h1804a44_2.tar.bz2",
+    "pycrdt-0.12.33-py313h3ab680a_0.tar.bz2",
+    "pycrdt-0.12.34-py313h3ab680a_0.tar.bz2",
+    "pycrdt-0.12.45-py313h3ab680a_0.tar.bz2",
+    "pycrdt-0.12.46-py313h3ab680a_0.tar.bz2",
+    "pycrdt-0.12.46-py313h3ab680a_1.tar.bz2",
+    "pydantic-core-2.41.5-py313h1e85631_0.tar.bz2",
+    "pydantic-core-2.41.5-py313h1e85631_1.tar.bz2",
+    "pyiceberg-0.10.0-py313h1804a44_1.tar.bz2",
+    "pyjs-4.0.1-hc286ada_3.tar.bz2",
+    "pyjs-4.0.2-hc286ada_3.tar.bz2",
+    "pysocks-1.7.1-py313h1804a44_0.tar.bz2",
+    "pysocks-1.7.1-py313h1804a44_1.tar.bz2",
+    "pyyaml-6.0-py313h1804a44_0.tar.bz2",
+    "pyyaml-6.0-py313h1804a44_1.tar.bz2",
+    "sympy-1.14.0-py313h1804a44_0.tar.bz2",
+    "sympy-1.14.0-py313h1804a44_1.tar.bz2",
+    "tree-sitter-0.23.2-py313h1804a44_0.tar.bz2",
+    "tree-sitter-0.24.0-py313h1804a44_0.tar.bz2",
+    "tree-sitter-0.25.0-py313h1804a44_0.tar.bz2",
+    "tree-sitter-0.25.1-py313h1804a44_0.tar.bz2",
+    "tree-sitter-0.25.2-py313h1804a44_1.tar.bz2",
+    "tree-sitter-go-0.23.4-py313h1804a44_1.tar.bz2",
+    "tree-sitter-go-0.25.0-py313h1804a44_1.tar.bz2",
+    "tree-sitter-java-0.23.5-py313h1804a44_0.tar.bz2",
+    "tree-sitter-java-0.23.5-py313h1804a44_1.tar.bz2",
+    "tree-sitter-python-0.25.0-py313h1804a44_1.tar.bz2",
+]
+
 platforms = ["noarch", "emscripten-wasm32"]
 
 current_emscripten_forge_repodata = {}
@@ -38,6 +109,9 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
 
     for package, pkg_info in packages.items():
         if package not in current_packages:
+            if package in BLACKLIST:
+                continue
+
             if DRY_RUN and uploaded_files >= DRY_RUN_MAX_FILES:
                 continue
             if not DRY_RUN and uploaded_files >= RUN_MAX_FILES:
@@ -58,7 +132,7 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
                 for dep in pkg_info['depends']:
                     if 'emscripten-abi' in dep:
                         correct = True
-                if not correct:
+                if not correct and package not in WHITELIST:
                     print(f'package {package} from {orig_channel} does not depend on emscripten-abi! Skipping')
                     continue
 
