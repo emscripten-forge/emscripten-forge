@@ -7,6 +7,7 @@ import requests
 import hashlib
 
 DRY_RUN = os.environ.get("DRY_RUN", False)
+DRY_RUN = True
 
 RUN_MAX_FILES = 300
 DRY_RUN_MAX_FILES = 5
@@ -85,12 +86,12 @@ BLACKLIST = [
     "tree-sitter-python-0.25.0-py313h1804a44_1.tar.bz2",
 ]
 
-platforms = ["noarch", "emscripten-wasm32"]
+PLATFORMS = ["noarch", "emscripten-wasm32"]
 
 current_emscripten_forge_repodata = {}
 
 # Read current repodata for emscripten-forge
-for platform in platforms:
+for platform in PLATFORMS:
     try:
         resp = requests.get(f"https://repo.prefix.dev/{CHANNEL}/{platform}/repodata.json.bz2", timeout=10)
         resp.raise_for_status()
@@ -180,8 +181,10 @@ def update_mirror():
     # allows us to have a smaller pkg_info.json
     total_packages = 0
 
+    all_packages = set()
+
     for url in channels_urls:
-        for platform in platforms:
+        for platform in PLATFORMS:
             resp = requests.get(f"{url}/{platform}/repodata.json.bz2", timeout=10)
             resp.raise_for_status()
 
@@ -192,3 +195,16 @@ def update_mirror():
             for packages_entry in ["packages", "packages.conda"]:
                 repodata_packages = repodata.get(packages_entry, {})
                 upload_packages(repodata_packages, packages_entry, url, platform)
+
+                all_packages.update(repodata.get(packages_entry, {}).keys())
+
+    # Delete non-existing packages from the emscripten-forge channel
+    for platform in PLATFORMS:
+        current_repodata = current_emscripten_forge_repodata.get(platform, {})
+
+        for packages_entry in ["packages", "packages.conda"]:
+            current_packages = current_repodata.get(packages_entry, {})
+
+            for package in current_packages:
+                if package not in all_packages:
+                    print(f"WOULD DELETE {package}")
