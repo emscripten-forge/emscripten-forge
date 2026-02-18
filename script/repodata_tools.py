@@ -45,8 +45,6 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
 
             url = f"{orig_channel}/{platform}/{package}"
 
-            print(f"\nDo upload {package} on {platform} from {url}", flush=True)
-
             # Download
             local_filename = os.path.join("/tmp", package)
             with requests.get(url, stream=True) as r:
