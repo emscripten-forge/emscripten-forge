@@ -112,6 +112,10 @@ def upload_packages(packages, packages_entry, orig_channel, platform):
             if package in BLACKLIST:
                 continue
 
+            # Special case, for __unix which we don't want anymore
+            if "__unix" in package:
+                continue
+
             if DRY_RUN and uploaded_files >= DRY_RUN_MAX_FILES:
                 continue
             if not DRY_RUN and uploaded_files >= RUN_MAX_FILES:
